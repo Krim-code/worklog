@@ -1,0 +1,41 @@
+[
+  {
+    "model": "worklog.worktype",
+    "pk": 1,
+    "fields": {
+      "code": "bricks",
+      "name": "Кладка кирпича",
+      "unit": "шт",
+      "is_active": true,
+      "default_rate": "0.00",
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "worklog.worktype",
+    "pk": 2,
+    "fields": {
+      "code": "painting",
+      "name": "Покраска",
+      "unit": "м2",
+      "is_active": true,
+      "default_rate": "0.00",
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "worklog.worktype",
+    "pk": 3,
+    "fields": {
+      "code": "wiring",
+      "name": "Проводка",
+      "unit": "м.п.",
+      "is_active": true,
+      "default_rate": "0.00",
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  }
+]

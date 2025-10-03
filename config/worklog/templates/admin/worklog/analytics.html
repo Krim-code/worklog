@@ -1,0 +1,89 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% block extrastyle %}
+  <style>
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+    .card { background: var(--body-bg); border: 1px solid var(--hairline-color); padding: 12px; border-radius: 8px; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+    @media (min-width: 1100px) { .grid { grid-template-columns: 1fr 1fr; } }
+    .filters { margin: 12px 0 20px; }
+    .filters input { padding: 6px 8px; }
+    .filters button { padding: 6px 10px; }
+    canvas { width: 100% !important; height: 380px !important; }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="filters">
+  <form method="get" class="form-inline">
+    <label>Период:&nbsp;</label>
+    <input type="date" name="start" value="{{ start }}">
+    <span>&nbsp;–&nbsp;</span>
+    <input type="date" name="end" value="{{ end }}">
+    <button type="submit" class="button">Обновить</button>
+    <a href="{% url 'admin:worklog_workentry_changelist' %}" class="button">К записям</a>
+  </form>
+</div>
+
+<div class="cards">
+  <div class="card"><b>Сумма за период</b><br><span style="font-size:20px">{{ total_qty }}</span></div>
+  <div class="card"><b>Сегодня, всего</b><br><span style="font-size:20px">{{ today_total }}</span></div>
+  <div class="card"><b>Сегодня: люди / типы</b><br><span style="font-size:20px">{{ today_workers }}</span> / {{ today_types }}</div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h3>Динамика по дням</h3>
+    <canvas id="chartDaily"></canvas>
+  </div>
+  <div class="card">
+    <h3>Топ работников</h3>
+    <canvas id="chartWorkers"></canvas>
+  </div>
+  <div class="card" style="grid-column: 1 / -1;">
+    <h3>По типам работ</h3>
+    <canvas id="chartTypes"></canvas>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <!-- Можно зафиксировать версию или положить chart.umd.js в static -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block footer %}
+  {{ block.super }}
+  <script>
+    const dailyCtx = document.getElementById('chartDaily');
+    const workersCtx = document.getElementById('chartWorkers');
+    const typesCtx = document.getElementById('chartTypes');
+
+    const daysLabels = {{ days_labels|safe }};
+    const daysValues = {{ days_values|safe }};
+    const workersLabels = {{ workers_labels|safe }};
+    const workersValues = {{ workers_values|safe }};
+    const typesLabels = {{ types_labels|safe }};
+    const typesValues = {{ types_values|safe }};
+
+    new Chart(dailyCtx, {
+      type: 'line',
+      data: { labels: daysLabels, datasets: [{ label: 'Количество', data: daysValues, tension: .2, fill: false }] },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    new Chart(workersCtx, {
+      type: 'bar',
+      data: { labels: workersLabels, datasets: [{ label: 'Сумма по работнику', data: workersValues }] },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false }
+    });
+
+    new Chart(typesCtx, {
+      type: 'bar',
+      data: { labels: typesLabels, datasets: [{ label: 'Сумма по типу', data: typesValues }] },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  </script>
+{% endblock %}
